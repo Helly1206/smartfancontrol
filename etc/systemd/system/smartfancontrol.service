@@ -1,0 +1,14 @@
+# SmartFanControl - Service for SmartFanControl
+
+[Unit]
+Description=SmartFanControl - Keep it cool (All in one fan temperature control)
+Wants=pigpiod.service
+After=pigpiod.service
+
+[Service]
+Type=simple
+ExecStart=/opt/smartfancontrol/smartfancontrol.py
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

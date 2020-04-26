@@ -1,0 +1,14 @@
+Source: smartfancontrol
+Section: net
+Priority: optional
+Maintainer: Helly1206
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.6
+XB-Plugin-Section: sharing
+
+Package: smartfancontrol
+Architecture: all
+Depends: pigpio (>= 1.71-0~rpt1),
+         ${misc:Depends}
+Description: SmartFanControl - keep it cool - 
+ service containing all in one fan and temperature control
