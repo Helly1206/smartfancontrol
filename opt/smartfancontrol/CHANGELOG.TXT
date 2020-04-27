@@ -1,2 +1,5 @@
+[B]0.8.1[/B]
+- Small changes to package builder
+
 [B]0.8.0[/B]
 - Initial release
