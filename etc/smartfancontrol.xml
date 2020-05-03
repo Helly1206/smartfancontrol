@@ -110,7 +110,7 @@
 		<TempFull>65</TempFull>
 		<LinSteps>2.5</LinSteps>
 		<Frequency>1</Frequency>
-		<Pgain>10</Pgain>
-		<Igain>0.1</Igain>
+		<Pgain>0.0</Pgain>
+		<Igain>0.0</Igain>
 	</control>
 </settings>
