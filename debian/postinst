@@ -3,10 +3,20 @@
 NAME="smartfancontrol"
 SERVICESCRIPT="$NAME.service"
 SERVICEDIR="/etc/systemd/system"
+PIGPIOTEST="which pigpiod"
 
 if [ -f "$SERVICEDIR/$SERVICESCRIPT" ]; then 
     systemctl enable $SERVICESCRIPT
     systemctl start $SERVICESCRIPT
+fi
+
+$PIGPIOTEST
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "SmartFanControl requires pigpio to be installed"
+  echo "No default installation available for your distribution"
+  echo "Please install this package manually"
+  echo "http://abyz.me.uk/rpi/pigpio/download.html"
 fi
 
 exit 0

@@ -1,3 +1,9 @@
+smartfancontrol (0.82) stable; urgency=low
+
+  * Removed absolute dependency to pigpio as it is not installable in ubuntu
+
+ -- Helly1206 <hellyrulez@hotmail.com>  Fri, 01 Jan 2021 09:12:17 +0100
+
 smartfancontrol (0.81) stable; urgency=low
 
   * Small changes to package builder
