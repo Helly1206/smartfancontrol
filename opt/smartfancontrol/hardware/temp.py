@@ -104,7 +104,10 @@ class temp(common):
     def __repr__(self):
         tempstr = "-"
         if self.temperature:
-            tempstr = "{:.1f}".format(self.temperature)
+            if self.Farenheit:
+                tempstr = "0{:.1f}".format(self.Celcius2Farenheit(self.temperature))
+            else: 
+                tempstr = "{:.1f}".format(self.temperature)
         return tempstr
     
     def print(self, temp):

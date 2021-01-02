@@ -34,7 +34,7 @@ from engine.tempctrl import tempctrl
 #########################################################
 
 ####################### GLOBALS #########################
-VERSION          = "0.82"
+VERSION          = "0.83"
 XML_FILENAME     = "smartfancontrol.xml"
 LOG_FILENAME     = "smartfancontrol.log"
 LOG_MAXSIZE      = 100*1024*1024

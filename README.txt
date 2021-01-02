@@ -1,4 +1,4 @@
-SmartFanControl v0.8.1
+SmartFanControl v0.8.3
 
 SmartFanControl - keep it cool - service containing all in one fan and temperature control
 =============== = ==== == ==== = ======= ========== === == === === === =========== =======
