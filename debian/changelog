@@ -1,9 +1,14 @@
+smartfancontrol (0.84) stable; urgency=low
+
+  * Fixed small bug in alarms timer
+
+ -- Helly1206 <hellyrulez@hotmail.com>  Sat, 25 Jul 2021 10:51:37 +0100
+
 smartfancontrol (0.83) stable; urgency=low
 
   * Added leading zero when monitor temperature is displayed in Farenheit
 
  -- Helly1206 <hellyrulez@hotmail.com>  Sat, 02 Jan 2021 19:12:17 +0100
-
 
 smartfancontrol (0.82) stable; urgency=low
 

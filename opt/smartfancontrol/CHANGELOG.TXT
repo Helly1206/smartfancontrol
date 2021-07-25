@@ -1,3 +1,6 @@
+[B]0.8.4[/B]
+- Small bugfix in alarm timer
+
 [B]0.8.3[/B]
 - Added leading zero when monitor temperature is displayed in Farenheit
 

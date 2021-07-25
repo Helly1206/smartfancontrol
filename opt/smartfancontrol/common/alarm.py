@@ -154,7 +154,7 @@ class alarm(alarms):
         self.mutex.release()
     
     def timerReset(self):
-        if self.timerQ.isSet():
+        if self.timerBusy.isSet():
             self.timerClear()
         
     def _timercallback(self):
