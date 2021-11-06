@@ -1,3 +1,9 @@
+smartfancontrol (0.86) stable; urgency=low
+
+  * Add option to fan running in idle mode at low temperatures
+
+ -- Helly1206 <hellyrulez@hotmail.com>  Sat, 06 Nov 2021 15:31:19 +0100
+
 smartfancontrol (0.84) stable; urgency=low
 
   * Fixed small bug in alarms timer

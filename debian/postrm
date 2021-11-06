@@ -5,7 +5,7 @@ SERVICESCRIPT="$NAME.service"
 SERVICEDIR="/etc/systemd/system"
 OPTIDR="/opt/$NAME"
 
-if [ -f "$SERVICEDIR/$SERVICESCRIPT" ]; then 
+if [ -f "$SERVICEDIR/$SERVICESCRIPT" ]; then
     systemctl stop $SERVICESCRIPT
     systemctl disable $SERVICESCRIPT
 fi

@@ -13,7 +13,7 @@ import sys
 import os
 try:
     import pigpio
-    ifinstalled = True                     
+    ifinstalled = True
 except ImportError:
     ifinstalled = False
 import signal
@@ -34,7 +34,7 @@ from engine.tempctrl import tempctrl
 #########################################################
 
 ####################### GLOBALS #########################
-VERSION          = "0.84"
+VERSION          = "0.86"
 XML_FILENAME     = "smartfancontrol.xml"
 LOG_FILENAME     = "smartfancontrol.log"
 LOG_MAXSIZE      = 100*1024*1024
@@ -74,9 +74,9 @@ class SmartFanControl(common):
         ch.setFormatter(formatter)
         self.settings = {}
         self.alarm = alarm()
-        
+
         common.__init__(self, self.logger)
-        
+
         self.pi = None
         if ifinstalled:
             self.pi = pigpio.pi()
@@ -111,7 +111,7 @@ class SmartFanControl(common):
         self.temp = temp(self.settings, self.alarm, self.logger)
         self.fanctrl = fanctrl(self.rpm, self.fanoutput, self.mutex, self.settings, self.alarm, self.logger, self.exitevent, autocalibrate)
         self.tempctrl = tempctrl(self.fanctrl, self.temp, self.settings, self.alarm, self.logger, self.exitevent, monstatus)
-        
+
         if mode == MODE_MANUALCAL:
             self.settings['fan']['PWMcalibrated'] = self.fanctrl.manualCalibrate()
             self.updateXML()
@@ -148,19 +148,19 @@ class SmartFanControl(common):
             self.fanctrl.exit()
             self.fanoutput.exit()
             exit(5)
-        
+
         self.logger.info("Starting SmartFanControl")
 
         if not self.exitevent.is_set():
             self.fanctrl.start()
             self.tempctrl.start()
             signal.pause()
-        
+
         self.logger.info("SmartFanControl Ready")
         self.tempctrl.exit()
         self.fanctrl.exit()
-        self.fanoutput.exit()        
-        
+        self.fanoutput.exit()
+
     def parseopts(self, argv):
         mode = MODE_RUN
         monstatus = False
@@ -200,27 +200,27 @@ class SmartFanControl(common):
             elif opt in ("-m", "--mon"):
                 monstatus = True
         return mode, monstatus
-        
+
     def GetXML(self):
         XMLpath = self.getXMLpath()
-        try:         
+        try:
             tree = ET.parse(XMLpath)
             root = tree.getroot()
             self.settings = {}
-        
+
             for child in root:
                 childdict={}
                 childname=child.tag
                 for toy in child:
                     childdict[toy.tag]=self.gettype(toy.text)
                 self.settings[childname]=childdict
-                
+
         except Exception as e:
             self.logger.error("Error parsing xml file")
             self.logger.error("Check XML file syntax for errors")
             self.logger.exception(e)
             exit(1)
-            
+
     def updateXML(self):
         settings = ET.Element('settings')
         comment = ET.Comment(self.getXMLcomment("settings"))
@@ -231,11 +231,11 @@ class SmartFanControl(common):
                 toy = ET.SubElement(child, key)
                 toy.text = self.settype(value)
         #print(self.prettify(settings))
-    
+
         XMLpath = self.getXMLpath()
         with open(XMLpath, "w") as xml_file:
             xml_file.write(self.prettify(settings))
-    
+
     def getXMLcomment(self, tag):
         comment = ""
         XMLpath = self.getXMLpath()
@@ -253,14 +253,14 @@ class SmartFanControl(common):
             if (begin > -1) and (end > -1):
                 comment = content[begin+len(cmttag):end]
         return comment
-    
+
     def prettify(self, elem):
         """Return a pretty-printed XML string for the Element.
         """
         rough_string = ET.tostring(elem, ENCODING)
         reparsed = parseString(rough_string)
         return reparsed.toprettyxml(indent="\t").replace('<?xml version="1.0" ?>','<?xml version="1.0" encoding="%s"?>' % ENCODING)
-    
+
     def getXMLpath(self):
         etcpath = "/etc/"
         XMLpath = ""
@@ -282,13 +282,13 @@ class SmartFanControl(common):
                 else:
                     self.logger.error("No XML file found")
                     exit(1)
-        return XMLpath           
-    
+        return XMLpath
+
     def title(self):
         print("SmartFanControl fan and temperature control")
         print("Version: " + VERSION)
         print(" ")
-    
+
     def GetLogger(self):
         logpath = "/var/log"
         LoggerPath = ""
@@ -302,9 +302,9 @@ class SmartFanControl(common):
                 LoggerPath = os.path.join(os.path.expanduser('~'),LOG_FILENAME)
             else:
                 print("Error opening logger, exit SmartFanControl")
-                exit(1) 
+                exit(1)
         return (LoggerPath)
-        
+
     def exit_app(self, signum, frame):
         self.exitevent.set()
 #########################################################

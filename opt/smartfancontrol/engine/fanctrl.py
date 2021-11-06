@@ -34,12 +34,12 @@ FANDEBUG      = False
 
 #########################################################
 """
-<mode> is the mode used to control the fan. Default is RPM. 
+<mode> is the mode used to control the fan. Default is RPM.
     ONOFF: Only on/ off control is used
     PWM: PWM control is used, with no RPM feedback (for fans that don't have this option)
          Manual calibration is required
     RPM: PWM control with RPM feedback is used. Calibration is performed automatically
-                
+
 <Frequency> The frequency of the fan control loop in Hz. default is 10.
 <Pgain> The P gain of the fan control loop. Default is 10. Only used in RPM mode.
 <Igain> The I gain of the fan control loop. Default is 1. Only used in RPM mode.
@@ -68,7 +68,7 @@ class fanctrl(Thread, common):
                 self.pid = pid()
                 self.frequency = self.checkkeydef(settings, 'fan', 'Frequency', FREQDEFAULT)
                 self.pgain = self.checkkeydef(settings, 'fan', 'Pgain', PDEFAULT)
-                self.igain = self.checkkeydef(settings, 'fan', 'Igain', IDEFAULT) 
+                self.igain = self.checkkeydef(settings, 'fan', 'Igain', IDEFAULT)
             elif mode.lower() == "pwm":
                 self.mode = FANCTRL_PWM
             else:
@@ -80,11 +80,11 @@ class fanctrl(Thread, common):
         self.calibrate = calibrate(self.rpm, self.fanoutput, self.mutex, settings, self.logger, self.exitevent, autocal)
         Thread.__init__(self)
         Thread.start(self)
-        
+
     def __del__(self):
         del self.calibrate
         del self.pid
-        
+
     def __str__(self):
         fanstr = "-"
         if self.mode == FANCTRL_RPM:
@@ -92,7 +92,7 @@ class fanctrl(Thread, common):
         else: # PWM/ ONOFF
             fanstr = self.fanoutput
         return fanstr
-    
+
     def __repr__(self):
         fanstr = "-"
         if self.mode == FANCTRL_RPM:
@@ -100,7 +100,7 @@ class fanctrl(Thread, common):
         else: # PWM/ ONOFF
             fanstr = "0.00, {!r}".format(self.fanoutput)
         return fanstr
-        
+
     def start(self, Kp = -100000, Ki = -100000):
         if self.mode == FANCTRL_RPM:
             if Kp == -100000:
@@ -112,22 +112,22 @@ class fanctrl(Thread, common):
             else:
                 windup = 100.0/Ki
             self.mutex.acquire()
-            self.pid.updateSettings(Kp = Kp, Ki = Ki, Kd = 0.0, frequency = self.frequency*2, 
-                                    direction = 0, sign = 1, outputmin = 0.001, outputmax = 100.0, windup = windup, 
+            self.pid.updateSettings(Kp = Kp, Ki = Ki, Kd = 0.0, frequency = self.frequency*2,
+                                    direction = 0, sign = 1, outputmin = 0.001, outputmax = 100.0, windup = windup,
                                     setpoint = 0)
             self.mutex.release()
         self.runthread.set()
-        
+
     def stop(self):
         self.runthread.clear()
-    
+
     def exit(self):
         self.calibrate.terminate()
         self.exitevent.set()
-        
+
     def manualCalibrate(self):
         return self.calibrate.manualCalibrate()
-        
+
     def run(self):
         try:
             #thread only needs to run in rpm mode
@@ -157,7 +157,7 @@ class fanctrl(Thread, common):
                 self.logi("Fan mode: ONOFF")
         except Exception as e:
             self.logger.exception(e)
-            
+
     def set(self, value):
         self.mutex.acquire()
         if self.mode == FANCTRL_RPM:
@@ -171,7 +171,7 @@ class fanctrl(Thread, common):
         else:
             self.fanoutput.set(float(value))
         self.mutex.release()
-        
+
     def get(self):
         value = 0
         if self.mode == FANCTRL_RPM:
@@ -179,7 +179,7 @@ class fanctrl(Thread, common):
         else:
             value = self.fanoutput.get()
         return value
-        
+
     def min(self):
         minval = 0
         if self.mode == FANCTRL_RPM:
@@ -191,7 +191,7 @@ class fanctrl(Thread, common):
         else:
             minval = 0
         return minval
-    
+
     def max(self):
         maxval = 0
         if self.mode == FANCTRL_RPM:
@@ -201,7 +201,7 @@ class fanctrl(Thread, common):
         else:
             maxval = 100.0
         return maxval
-            
+
     def manual(self):
         self.exitevent.wait(MANUAL_SLEEP)
         print("Manual fan control")
@@ -214,7 +214,7 @@ class fanctrl(Thread, common):
         else:
             inptxt = "Enter ONOFF: "
         stdinput = stdin(inptxt, exitevent = self.exitevent, mutex=self.mutex, displaylater = True, background = True)
-        while not self.exitevent.is_set():   
+        while not self.exitevent.is_set():
             self.mutex.acquire()
             if self.mode == FANCTRL_RPM:
                 print("RPM: {:.3f}, PWM: {:.3f}, RPMcmd: {:.3f}\r".format(self.rpm.get(), self.fanoutput.get(), self.rpmcmd))
@@ -223,7 +223,7 @@ class fanctrl(Thread, common):
             else:
                 print("RPM: {:.3f}, PWM: {:.3f}\r".format(self.rpm.get(), self.fanoutput.get()))
             self.mutex.release()
-            
+
             inp = stdinput.getinput()
             if inp:
                 value = self.gettype(inp, False)
@@ -232,11 +232,11 @@ class fanctrl(Thread, common):
                 else:
                     print("Invalid input!")
                 stdinput = stdin(inptxt, exitevent = self.exitevent, mutex=self.mutex, displaylater = True, background = True)
-            else: 
+            else:
                 self.exitevent.wait(MANUAL_SLEEP)
         print("Finished manual fan control")
         return
-    
+
     def RPMautotune(self):
         self.exitevent.wait(MANUAL_SLEEP)
         inptxt = ""
@@ -253,7 +253,7 @@ class fanctrl(Thread, common):
         del piautotune
         print("Finished autotuning")
         return rv
-    
+
     def getalarm(self):
         if self.mode == FANCTRL_RPM:
             if self.calibrate.get()[0] <= 0.0 and self.calibrate.get()[1] <= 0.0 and not FANDEBUG:
@@ -262,7 +262,7 @@ class fanctrl(Thread, common):
                     self.alarm.reset(self.alarm.ALARM_FANNOTRUNNING)
                     self.alarm.reset(self.alarm.ALARM_FANNORPMMODE)
                     self.alarm.reset(self.alarm.ALARM_FANNOTMAXRPM)
-                    self.loge(self.alarm)    
+                    self.loge(self.alarm)
                 return self.alarm.ALARM_FANCALSTALL
             elif self.rpmcmd > 0.0 and self.rpm.get() <= 0.0:
                 if self.alarm.timerGet():
@@ -271,7 +271,7 @@ class fanctrl(Thread, common):
                         self.alarm.reset(self.alarm.ALARM_FANNORPMMODE)
                         self.alarm.reset(self.alarm.ALARM_FANNOTMAXRPM)
                         self.alarm.reset(self.alarm.ALARM_FANCALSTALL)
-                        self.loge(self.alarm)    
+                        self.loge(self.alarm)
                     return self.alarm.ALARM_FANNOTRUNNING
                 else:
                     return self.alarm.ALARM_NONE
@@ -282,7 +282,7 @@ class fanctrl(Thread, common):
                         self.alarm.reset(self.alarm.ALARM_FANNORPMMODE)
                         self.alarm.reset(self.alarm.ALARM_FANNOTRUNNING)
                         self.alarm.reset(self.alarm.ALARM_FANCALSTALL)
-                        self.loge(self.alarm)    
+                        self.loge(self.alarm)
                     return self.alarm.ALARM_FANNOTMAXRPM
                 else:
                     return self.alarm.ALARM_NONE
@@ -290,10 +290,10 @@ class fanctrl(Thread, common):
                 self.alarm.timerReset()
                 self.alarm.reset(self.alarm.ALARM_FANNOTRUNNING)
                 self.alarm.reset(self.alarm.ALARM_FANNORPMMODE)
-                self.alarm.reset(self.alarm.ALARM_FANNOTMAXRPM) 
+                self.alarm.reset(self.alarm.ALARM_FANNOTMAXRPM)
                 self.alarm.reset(self.alarm.ALARM_FANCALSTALL)
                 return self.alarm.ALARM_NONE
-        else: 
+        else:
             if not self.alarm.get(self.alarm.ALARM_FANNORPMMODE):
                 self.alarm.set(self.alarm.ALARM_FANNORPMMODE)
                 self.alarm.reset(self.alarm.ALARM_FANNOTRUNNING)
@@ -301,7 +301,7 @@ class fanctrl(Thread, common):
                 self.alarm.reset(self.alarm.ALARM_FANCALSTALL)
                 self.logw(self.alarm)
             return self.alarm.ALARM_FANNORPMMODE
-                 
+
 
 ######################### MAIN ##########################
 if __name__ == "__main__":
